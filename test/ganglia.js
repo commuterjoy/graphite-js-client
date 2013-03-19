@@ -14,7 +14,7 @@ describe('Ganglia client', function(){
         var g = new ganglia.client()
         g.targets.push('bar.sum', 'foo-å-sum');
         g.targets.should.have.length(2);
-        g.toUrl().should.be.equal('http://graphite.guprod.gnl/render?target=bar.sum&target=foo-%C3%A5-sum&from=-1hours&format=jsonp&jsonp=d')
+        g.toUrl().should.be.equal('http://graphite.guprod.gnl/render?target=bar.sum&target=foo-%C3%A5-sum&from=-1hours&format=json&jsonp=?')
     })
     
     xit('should push ganglia targets with aliases', function() {}) 

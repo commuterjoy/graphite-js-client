@@ -5,29 +5,95 @@
     <script src="vendor/d3.v3.min.js"></script>
     <script src="vendor/rickshaw.min.js"></script> 
     <script src="vendor/curl.js"></script> 
+    
+    <style>
+        h2 {
+            font-family: Helvetica, sans-serif; font-weight: normal;
+            margin: 20px auto;
+            width: 50%;
 
+        }
+        svg { display: block; margin: 0 auto; }
+    </style>
+    
     <h2>Article server response codes</h2>
+
     <div id="chart"></div>
-    <button onclick="redraw()">redraw</button>
 
     <script>
         curl(['lib/ganglia.js'])
             .then(function(ganglia) {
                 
                 var g = new ganglia.client();
-                g.targets.push(
-                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum,"__SummaryInfo__"))',
-                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum,"__SummaryInfo__"))',
-                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum,"__SummaryInfo__"))',
-                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum,"__SummaryInfo__"))',
-                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum,"__SummaryInfo__"))'
-                ) 
 
-                console.log(g.toUrl());
+                // push a set of ganglia targets 
+                g.targets.push(
+                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"200s")',
+                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"30Xs")',
+                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"404s")',
+                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"50Xs")',
+                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"Other")'
+                )
+
+                // serialise the ganglia properties as a URL
+                var jsonUrl = g.toUrl();
+
+                // draw a graph 
+                Rickshaw.Graph.JSONP.Static = Rickshaw.Class.create( Rickshaw.Graph.JSONP, {
+
+                    request: function() {
+                        $.ajax( {
+                            url: this.dataURL,
+                            success: this.success.bind(this),
+                            error: this.error.bind(this),
+                            dataType: 'jsonp',
+                            jsonpCallback: 'callback'
+                        } );
+                    }
+                 });
+
+                 var jsonpGraph = new Rickshaw.Graph.JSONP.Static( {
+
+                    element: document.getElementById("chart"),
+                    width: window.innerWidth * 0.5,
+                    height: window.innerHeight * 0.5,
+                    renderer: 'line',
+                    dataURL: jsonUrl,
+                    onData: function(d) {
+                        return d.map( function(i) {
+                            return { name: i.target, data: i.datapoints.map(function(dd, i) {
+                                return { x: dd[1], y: dd[0] }
+                                })
+                            }
+                        })
+                    },
+                    series: [
+                        {
+                            name: '200s',
+                            color: 'green',
+                        }, {
+                            name: '30Xs',
+                            color: 'blue',
+                        }, {
+                            name: '404s',
+                            color: '#999'
+                        }, {
+                            name: '50Xs',
+                            color: 'red'
+                        }, {
+                            name: 'Other',
+                            color: 'orange'
+                        }
+                    ]
+                } );
+
+                window.setInterval(function() {
+                    jsonpGraph.request() 
+                }, 15000);    
 
             }, function() { 
-            console.error('curl.js failed to load')
-        });
+                console.error('curl.js failed to load')
+            });
     </script>
 
     </body>

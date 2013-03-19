@@ -1,0 +1,35 @@
+<html>
+    <body>
+
+    <script src="vendor/zepto.min.js"></script> 
+    <script src="vendor/d3.v3.min.js"></script>
+    <script src="vendor/rickshaw.min.js"></script> 
+    <script src="vendor/curl.js"></script> 
+
+    <h2>Article server response codes</h2>
+    <div id="chart"></div>
+    <button onclick="redraw()">redraw</button>
+
+    <script>
+        curl(['lib/ganglia.js'])
+            .then(function(ganglia) {
+                
+                var g = new ganglia.client();
+                g.targets.push(
+                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum,"__SummaryInfo__"))',
+                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum,"__SummaryInfo__"))',
+                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum,"__SummaryInfo__"))',
+                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum,"__SummaryInfo__"))',
+                  'averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum,"__SummaryInfo__"))'
+                ) 
+
+                console.log(g.toUrl());
+
+            }, function() { 
+            console.error('curl.js failed to load')
+        });
+    </script>
+
+    </body>
+</html>
+

@@ -24,12 +24,12 @@ describe('graphite client', function(){
                      .averageSeries()
                      .alias('foo')
 
-        t.toQueryString().should.be.equal('alias(averageseries(exclude(graphite.GU-PROD-Frontend,"__SummaryInfo__")),"foo")')
+        t.toQueryString().should.be.equal('alias(averageSeries(exclude(graphite.GU-PROD-Frontend,"__SummaryInfo__")),"foo")')
         
         var t = new graphite.target('graphite.GU-PROD-Frontend')
                      .timeShift('7d')
 
-        t.toQueryString().should.be.equal('timeshift(graphite.GU-PROD-Frontend,"7d")')
+        t.toQueryString().should.be.equal('timeShift(graphite.GU-PROD-Frontend,"7d")')
 
         var t = new graphite.target('graphite.GU-PROD-Frontend')
                      .hitcount('foo', 'bar')

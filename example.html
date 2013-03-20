@@ -38,14 +38,23 @@
                 
                 var g = new ganglia.client();
 
+                // construct a bunch of targets
+                var targets = [
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum'
+                    ].map(function(tag){
+                        return new ganglia.target(tag)
+                                     .exclude('__SummaryInfo__')
+                                     .averageSeries()
+                                     .alias(/gu_([^_]+)/.exec(tag)[1])
+                                     .toQueryString()
+                    })
+
                 // push a set of ganglia targets 
-                g.targets.push(
-                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"200s")',
-                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"30Xs")',
-                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"404s")',
-                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"50Xs")',
-                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"Other")'
-                )
+                g.targets = targets
 
                 // serialise the ganglia properties as a URL
                 var jsonUrl = g.toUrl();
@@ -82,32 +91,39 @@
                     },
                     series: [
                         {
-                            name: '200s',
+                            name: '200',
                             color: 'green',
                         }, {
-                            name: '30Xs',
+                            name: '30x',
                             color: 'blue',
                         }, {
-                            name: '404s',
+                            name: '404',
                             color: '#999'
                         }, {
-                            name: '50Xs',
+                            name: '50x',
                             color: 'red'
                         }, {
-                            name: 'Other',
+                            name: 'other',
                             color: 'orange'
                         }
                     ]
                 } );
 
                 var errors = new ganglia.client();
+                
+                var targets = [
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
+                    ].map(function(tag){
+                        return new ganglia.target(tag)
+                                     .exclude('__SummaryInfo__')
+                                     .averageSeries()
+                                     .alias(/gu_([^_]+)/.exec(tag)[1])
+                                     .toQueryString()
+                    })
 
                 // push a set of ganglia targets 
-                errors.targets.push(
-                  'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"50Xs")'
-                )
-
-                // serialise the ganglia properties as a URL
+                errors.targets = targets
+                
                 var jsonErrorsUrl = errors.toUrl();
 
                 // draw a graph 
@@ -142,21 +158,23 @@
                     },
                     series: [
                         {
-                            name: '50Xs',
+                            name: '50x',
                             color: 'red'
                         }
                     ]
                 } );
                 
                 var timeshift = new ganglia.client();
+                var tag = 'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum';
+                var targets = [
+                     new ganglia.target(tag).alias('0h').toQueryString(),
+                     new ganglia.target(tag).timeshift('1h').alias('1h').toQueryString(),
+                     new ganglia.target(tag).timeshift('1d').alias('1d').toQueryString(),
+                     new ganglia.target(tag).timeshift('7d').alias('7d').toQueryString()
+                ] 
 
                 // push a set of ganglia targets 
-                timeshift.targets.push(
-                  'alias(ganglia.GU-PROD-Frontend.frontend-article_eu-west-1.__SummaryInfo__.gu_200_ok_request_status_rate-frontend-article.sum,"0h")',
-                  'alias(timeShift(ganglia.GU-PROD-Frontend.frontend-article_eu-west-1.__SummaryInfo__.gu_200_ok_request_status_rate-frontend-article.sum,"1h"),"1h")',
-                  'alias(timeShift(ganglia.GU-PROD-Frontend.frontend-article_eu-west-1.__SummaryInfo__.gu_200_ok_request_status_rate-frontend-article.sum,"1d"),"1d")',
-                  'alias(timeShift(ganglia.GU-PROD-Frontend.frontend-article_eu-west-1.__SummaryInfo__.gu_200_ok_request_status_rate-frontend-article.sum,"7d"),"7d")'
-                )
+                timeshift.targets = targets
 
                 // serialise the ganglia properties as a URL
                 var jsonTimeshiftUrl = timeshift.toUrl();

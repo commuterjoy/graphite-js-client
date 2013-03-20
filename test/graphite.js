@@ -47,7 +47,12 @@ describe('graphite client', function(){
         var g = new graphite.client({ from: '-4hours', format: 'jpg' })
         g.targets.push('foo');
         g.toUrl().should.be.equal('http://graphite.guprod.gnl/render?target=foo&from=-4hours&format=jpg')
+    })
     
+    it('should be able to specify the graphite host', function() {
+        var g = new graphite.client({ host: 'http://graphite.example.com/render' })
+        g.targets.push('foo');
+        g.toUrl().should.be.equal('http://graphite.example.com/render?target=foo&from=-1hours&format=json&jsonp=?')
     })
 
 })

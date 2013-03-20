@@ -14,16 +14,16 @@ open example.html
 This is written as an AMD module, so you can include it in an HTML page like so,
 
 ```
-curl(['lib/ganglia.js'])
-    .then(function(ganglia) {
-        var g = new ganglia.client();
+curl(['lib/graphite.js'])
+    .then(function(graphite) {
+        var g = new graphite.client();
     })
 ```
 
 Create a simple graph URL with two targets,
 
 ```
-var g = new ganglia.client()
+var g = new graphite.client()
 g.targets.push('bar.sum', 'foo.sum');
 g.toUrl() // http://graphite.guprod.gnl/render?target=bar.sum&target=foo.sum&from=-1hours
 ```
@@ -33,7 +33,7 @@ g.toUrl() // http://graphite.guprod.gnl/render?target=bar.sum&target=foo.sum&fro
 Or we could ask for a JSON object from the last 24 hours,
 
 ```
-var g = new ganglia.client({ format: 'json', 'from': '-24hours' })
+var g = new graphite.client({ format: 'json', 'from': '-24hours' })
 g.targets.push('bar.sum', 'foo.sum');
 g.toUrl() // http://graphite.guprod.gnl/render?target=bar.sum&target=foo.sum&from=-24hours&format=json&jsonp=?
 ```
@@ -41,14 +41,14 @@ g.toUrl() // http://graphite.guprod.gnl/render?target=bar.sum&target=foo.sum&fro
 Create a graph with [functions](http://graphite.readthedocs.org/en/latest/functions.html) around the series data,
 
 ```
-var g = new ganglia.client()
+var g = new graphite.client()
 g.targets.push(
-    new ganglia.target('ganglia.GU-PROD-Frontend')
+    new graphite.target('graphite.GU-PROD-Frontend')
       .exclude('__SummaryInfo__')
       .averageSeries()
       .alias('200s')
       .toQueryString()
     )
-g.toUrl() // 'http://graphite.guprod.gnl/render?target=alias(averageSeries(exclude(ganglia.GU-PROD-Frontend,"__SummaryInfo__")),"foo")&from=-1hours')
+g.toUrl() // 'http://graphite.guprod.gnl/render?target=alias(averageSeries(exclude(graphite.GU-PROD-Frontend,"__SummaryInfo__")),"foo")&from=-1hours')
 ```
 

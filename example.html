@@ -33,30 +33,30 @@
     <div id="chart-timeshift"></div>
 
     <script>
-        curl(['lib/ganglia.js'])
-            .then(function(ganglia) {
+        curl(['lib/graphite.js'])
+            .then(function(graphite) {
                 
-                var g = new ganglia.client();
+                var g = new graphite.client();
 
                 // construct a bunch of targets
                 var targets = [
-                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum',
-                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum',
-                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum',
-                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
-                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum'
+                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum',
+                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum',
+                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum',
+                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
+                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum'
                     ].map(function(tag){
-                        return new ganglia.target(tag)
+                        return new graphite.target(tag)
                                      .exclude('__SummaryInfo__')
                                      .averageSeries()
                                      .alias(/gu_([^_]+)/.exec(tag)[1])
                                      .toQueryString()
                     })
 
-                // push a set of ganglia targets 
+                // push a set of graphite targets 
                 g.targets = targets
 
-                // serialise the ganglia properties as a URL
+                // serialise the graphite properties as a URL
                 var jsonUrl = g.toUrl();
 
                 // draw a graph 
@@ -109,19 +109,19 @@
                     ]
                 } );
 
-                var errors = new ganglia.client();
+                var errors = new graphite.client();
                 
                 var targets = [
-                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
+                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
                     ].map(function(tag){
-                        return new ganglia.target(tag)
+                        return new graphite.target(tag)
                                      .exclude('__SummaryInfo__')
                                      .averageSeries()
                                      .alias(/gu_([^_]+)/.exec(tag)[1])
                                      .toQueryString()
                     })
 
-                // push a set of ganglia targets 
+                // push a set of graphite targets 
                 errors.targets = targets
                 
                 var jsonErrorsUrl = errors.toUrl();
@@ -164,19 +164,19 @@
                     ]
                 } );
                 
-                var timeshift = new ganglia.client();
-                var tag = 'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum';
+                var timeshift = new graphite.client();
+                var tag = 'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum';
                 var targets = [
-                     new ganglia.target(tag).alias('0h').toQueryString(),
-                     new ganglia.target(tag).timeshift('1h').alias('1h').toQueryString(),
-                     new ganglia.target(tag).timeshift('1d').alias('1d').toQueryString(),
-                     new ganglia.target(tag).timeshift('7d').alias('7d').toQueryString()
+                     new graphite.target(tag).alias('0h').toQueryString(),
+                     new graphite.target(tag).timeshift('1h').alias('1h').toQueryString(),
+                     new graphite.target(tag).timeshift('1d').alias('1d').toQueryString(),
+                     new graphite.target(tag).timeshift('7d').alias('7d').toQueryString()
                 ] 
 
-                // push a set of ganglia targets 
+                // push a set of graphite targets 
                 timeshift.targets = targets
 
-                // serialise the ganglia properties as a URL
+                // serialise the graphite properties as a URL
                 var jsonTimeshiftUrl = timeshift.toUrl();
 
                 // draw a graph 

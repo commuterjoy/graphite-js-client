@@ -1,4 +1,4 @@
-Graphite has a nice simple JSON API, which means we can shift rendering from boring JPGs to exicting JavaScript visualisations. 
+[Graphite](http://graphite.wikidot.com/) has a nice simple JSON API, which means we can shift rendering from boring JPGs to exicting JavaScript visualisations. 
 
 # Quickstart
 

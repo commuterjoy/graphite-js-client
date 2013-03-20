@@ -15,12 +15,22 @@
             font-size: 1em;
         }
         svg { display: block; margin: 10px auto; }
+        svg path { stroke-width: 1; }
+        header { background-color: #214583; }
     </style>
     
+    <header>
+        Guardian
+    </header>
+
+    <p>last updated</p>
+
     <h2>Article server response codes</h2>
     <div id="chart"></div>
     <h2>Article server 5xx codes</h2>
     <div id="chart-5xx"></div>
+    <h2>Article server timeshift comparison</h2>
+    <div id="chart-timeshift"></div>
 
     <script>
         curl(['lib/ganglia.js'])
@@ -36,7 +46,6 @@
                   'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"50Xs")',
                   'alias(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum,"__SummaryInfo__")),"Other")'
                 )
-                  //'alias(timeShift(averageSeries(exclude(ganglia.GU-PROD-Frontend.frontend-article_eu-west-1.__SummaryInfo__.gu_200_ok_request_status_rate-frontend-article.sum,"__SummaryInfo__"))"-7d"),"Last week")'
 
                 // serialise the ganglia properties as a URL
                 var jsonUrl = g.toUrl();
@@ -50,6 +59,7 @@
                             success: this.success.bind(this),
                             error: this.error.bind(this),
                             dataType: 'jsonp',
+                            timeout: 5000,
                             jsonpCallback: 'callback'
                         } );
                     }
@@ -98,7 +108,7 @@
                 )
 
                 // serialise the ganglia properties as a URL
-                var jsonErrorsUrl = g.toUrl();
+                var jsonErrorsUrl = errors.toUrl();
 
                 // draw a graph 
                 Rickshaw.Graph.JSONP.Static = Rickshaw.Class.create( Rickshaw.Graph.JSONP, {
@@ -109,6 +119,7 @@
                             success: this.success.bind(this),
                             error: this.error.bind(this),
                             dataType: 'jsonp',
+                            timeout: 5000,
                             jsonpCallback: 'callback'
                         } );
                     }
@@ -136,6 +147,70 @@
                         }
                     ]
                 } );
+                
+                var timeshift = new ganglia.client();
+
+                // push a set of ganglia targets 
+                timeshift.targets.push(
+                  'alias(ganglia.GU-PROD-Frontend.frontend-article_eu-west-1.__SummaryInfo__.gu_200_ok_request_status_rate-frontend-article.sum,"0h")',
+                  'alias(timeShift(ganglia.GU-PROD-Frontend.frontend-article_eu-west-1.__SummaryInfo__.gu_200_ok_request_status_rate-frontend-article.sum,"1h"),"1h")',
+                  'alias(timeShift(ganglia.GU-PROD-Frontend.frontend-article_eu-west-1.__SummaryInfo__.gu_200_ok_request_status_rate-frontend-article.sum,"1d"),"1d")',
+                  'alias(timeShift(ganglia.GU-PROD-Frontend.frontend-article_eu-west-1.__SummaryInfo__.gu_200_ok_request_status_rate-frontend-article.sum,"7d"),"7d")'
+                )
+
+                // serialise the ganglia properties as a URL
+                var jsonTimeshiftUrl = timeshift.toUrl();
+
+                // draw a graph 
+                Rickshaw.Graph.JSONP.Static = Rickshaw.Class.create( Rickshaw.Graph.JSONP, {
+
+                    request: function() {
+                        $.ajax( {
+                            url: this.dataURL,
+                            success: this.success.bind(this),
+                            error: this.error.bind(this),
+                            dataType: 'jsonp',
+                            timeout: 5000,
+                            jsonpCallback: 'callback'
+                        } );
+                    }
+                 });
+
+                 var jsonpTimeshiftGraph = new Rickshaw.Graph.JSONP.Static( {
+
+                    element: document.getElementById("chart-timeshift"),
+                    width: window.innerWidth * 0.5,
+                    height: 300,
+                    renderer: 'line',
+                    dataURL: jsonTimeshiftUrl,
+                    onData: function(d) {
+                        console.log(d);
+                        return d.map( function(i) {
+                            return { name: i.target, data: i.datapoints.map(function(dd, i) {
+                                return { x: dd[1], y: dd[0] }
+                                })
+                            }
+                        })
+                    },
+                    series: [
+                        {
+                            name: '7d',
+                            color: '#ddd'
+                        }, {
+                            name: '1d',
+                            color: '#aaa'
+                        }, {
+                            name: '1h',
+                            color: '#666'
+                        }, {
+                            name: '0h',
+                            color: 'green'
+                        }
+                    ]
+                } );
+
+
+                // polling
 
                 window.setInterval(function() {
                     jsonpGraph.request() 
@@ -143,6 +218,10 @@
                 
                 window.setInterval(function() {
                     jsonpErrorsGraph.request() 
+                }, 15000);    
+                
+                window.setInterval(function() {
+                    jsonpTimeshiftGraph.request() 
                 }, 15000);    
 
             }, function() { 

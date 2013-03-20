@@ -37,8 +37,17 @@ describe('Ganglia client', function(){
         t.toQueryString().should.be.equal('hitcount(ganglia.GU-PROD-Frontend,"foo","bar")')
     })
 
-    xit('should be able to specify the output format', function() {})
-    xit('should be able to specify the time series duration', function() {})
-    xit('should be able to specify the jsonp callback', function() {})
+    it('should be able to specify the output format', function() {
+        var g = new ganglia.client({ format: 'png' })
+        g.targets.push('foo');
+        g.toUrl().should.be.equal('http://graphite.guprod.gnl/render?target=foo&from=-1hours&format=png')
+    })
+    
+    it('should be able to specify the time series duration', function() {
+        var g = new ganglia.client({ from: '-4hours', format: 'jpg' })
+        g.targets.push('foo');
+        g.toUrl().should.be.equal('http://graphite.guprod.gnl/render?target=foo&from=-4hours&format=jpg')
+    
+    })
 
 })

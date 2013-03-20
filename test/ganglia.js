@@ -31,6 +31,10 @@ describe('Ganglia client', function(){
 
         t.toQueryString().should.be.equal('timeshift(ganglia.GU-PROD-Frontend,"7d")')
 
+        var t = new ganglia.target('ganglia.GU-PROD-Frontend')
+                     .hitcount('foo', 'bar')
+
+        t.toQueryString().should.be.equal('hitcount(ganglia.GU-PROD-Frontend,"foo","bar")')
     })
 
     xit('should be able to specify the output format', function() {})

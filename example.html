@@ -40,11 +40,11 @@
 
                 // construct a bunch of targets
                 var targets = [
-                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum',
-                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum',
-                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum',
-                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
-                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum'
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum'
                     ].map(function(tag){
                         return new graphite.target(tag)
                                      .exclude('__SummaryInfo__')
@@ -112,7 +112,7 @@
                 var errors = new graphite.client();
                 
                 var targets = [
-                    'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
                     ].map(function(tag){
                         return new graphite.target(tag)
                                      .exclude('__SummaryInfo__')
@@ -165,12 +165,12 @@
                 } );
                 
                 var timeshift = new graphite.client();
-                var tag = 'graphite.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum';
+                var tag = 'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum';
                 var targets = [
                      new graphite.target(tag).alias('0h').toQueryString(),
-                     new graphite.target(tag).timeshift('1h').alias('1h').toQueryString(),
-                     new graphite.target(tag).timeshift('1d').alias('1d').toQueryString(),
-                     new graphite.target(tag).timeshift('7d').alias('7d').toQueryString()
+                     new graphite.target(tag).timeShift('1h').alias('1h').toQueryString(),
+                     new graphite.target(tag).timeShift('1d').alias('1d').toQueryString(),
+                     new graphite.target(tag).timeShift('7d').alias('7d').toQueryString()
                 ] 
 
                 // push a set of graphite targets 

@@ -44,9 +44,9 @@ describe('graphite client', function(){
     })
     
     it('should be able to specify the time series duration', function() {
-        var g = new graphite.client({ from: '-4hours', format: 'jpg' })
+        var g = new graphite.client({ from: '-4hours', until: '-2hours', format: 'jpg' })
         g.targets.push('foo');
-        g.toUrl().should.be.equal('http://graphite.example.com/render?target=foo&from=-4hours&format=jpg')
+        g.toUrl().should.be.equal('http://graphite.example.com/render?target=foo&from=-4hours&format=jpg&until=-2hours')
     })
     
     it('should be able to specify the graphite host', function() {

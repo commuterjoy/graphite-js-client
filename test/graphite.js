@@ -40,7 +40,7 @@ describe('graphite.client', function(){
 describe('graphite.target', function() {
     
     it('should be defined', function(){
-        (new graphite.target()).should.be.ok
+        (new graphite.target(1)).should.be.ok
     })
     
     it('should push graphite targets with functions', function() {
@@ -63,9 +63,8 @@ describe('graphite.target', function() {
         t.toQueryString().should.be.equal('hitcount(graphite.GU-PROD-Frontend,"foo","bar","car","la")')
     })
     
-    xit('throw error given an unrecognised function', function() {
-        var t = new graphite.target('graphite.GU-PROD-Frontend')
-                     .foo()
+    it('throw error when the target is not given a name', function() {
+        (function(){ new graphite.target() }).should.throw(/No target specified/);
     })
 
 })

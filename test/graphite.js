@@ -14,7 +14,7 @@ describe('graphite client', function(){
         var g = new graphite.client()
         g.targets.push('bar.sum', 'foo-å-sum');
         g.targets.should.have.length(2);
-        g.toUrl().should.be.equal('http://graphite.guprod.gnl/render?target=bar.sum&target=foo-%C3%A5-sum&from=-1hours&format=json&jsonp=?')
+        g.toUrl().should.be.equal('http://graphite.example.com/render?target=bar.sum&target=foo-%C3%A5-sum&from=-1hours&format=json&jsonp=?')
     })
     
     it('should push graphite targets with functions', function() {
@@ -40,19 +40,19 @@ describe('graphite client', function(){
     it('should be able to specify the output format', function() {
         var g = new graphite.client({ format: 'png' })
         g.targets.push('foo');
-        g.toUrl().should.be.equal('http://graphite.guprod.gnl/render?target=foo&from=-1hours&format=png')
+        g.toUrl().should.be.equal('http://graphite.example.com/render?target=foo&from=-1hours&format=png')
     })
     
     it('should be able to specify the time series duration', function() {
         var g = new graphite.client({ from: '-4hours', format: 'jpg' })
         g.targets.push('foo');
-        g.toUrl().should.be.equal('http://graphite.guprod.gnl/render?target=foo&from=-4hours&format=jpg')
+        g.toUrl().should.be.equal('http://graphite.example.com/render?target=foo&from=-4hours&format=jpg')
     })
     
     it('should be able to specify the graphite host', function() {
-        var g = new graphite.client({ host: 'http://graphite.example.com/render' })
+        var g = new graphite.client({ host: 'http://graphite.foo/render' })
         g.targets.push('foo');
-        g.toUrl().should.be.equal('http://graphite.example.com/render?target=foo&from=-1hours&format=json&jsonp=?')
+        g.toUrl().should.be.equal('http://graphite.foo/render?target=foo&from=-1hours&format=json&jsonp=?')
     })
 
 })

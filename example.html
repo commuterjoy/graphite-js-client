@@ -36,7 +36,7 @@
         curl(['lib/graphite.js'])
             .then(function(graphite) {
                 
-                var g = new graphite.client();
+                var g = new graphite.client({ host: 'http://graphite.guprod.gnl' });
 
                 // construct a bunch of targets
                 var targets = [
@@ -109,8 +109,8 @@
                     ]
                 } );
 
-                var errors = new graphite.client();
-                
+                var errors = new graphite.client({ host: 'http://graphite.guprod.gnl' });
+
                 var targets = [
                     'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
                     ].map(function(tag){
@@ -164,7 +164,8 @@
                     ]
                 } );
                 
-                var timeshift = new graphite.client();
+                var timeshift = new graphite.client({ host: 'http://graphite.guprod.gnl' });
+
                 var tag = 'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum';
                 var targets = [
                      new graphite.target(tag).alias('0h').toQueryString(),

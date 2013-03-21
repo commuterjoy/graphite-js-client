@@ -24,9 +24,9 @@ curl(['lib/graphite.js'])
 Create a simple graph URL with two targets,
 
 ```
-var g = new graphite.client()
+var g = new graphite.client( { host: 'http://foo.com/render' } )
 g.targets.push('bar.sum', 'foo.sum');
-g.toUrl() // http://graphite.guprod.gnl/render?target=bar.sum&target=foo.sum&from=-1hours
+g.toUrl() // http://foo.com/render?target=bar.sum&target=foo.sum&from=-1hours
 ```
 
 ... you could put the output of the _toURL()_ function in to the src of an &lt;img&gt; tag for example.
@@ -38,7 +38,7 @@ Or we could ask for a JSON object from the last 24 hours,
 ```
 var g = new graphite.client({ format: 'json', 'from': '-24hours' })
 g.targets.push('bar.sum', 'foo.sum');
-g.toUrl() // http://graphite.guprod.gnl/render?target=bar.sum&target=foo.sum&from=-24hours&format=json&jsonp=?
+g.toUrl() // http://graphite.example.com/render?target=bar.sum&target=foo.sum&from=-24hours&format=json&jsonp=?
 ```
 
 ### Functions

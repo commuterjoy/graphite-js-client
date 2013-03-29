@@ -14,17 +14,11 @@
             width: 50%;
             font-size: 1em;
         }
-        svg { display: block; margin: 10px auto; }
+        svg { display: block; margin: 10px auto; border: 1px solid #999; }
         svg path { stroke-width: 1; }
         header { background-color: #214583; }
+        h2 { display : none; }
     </style>
-    
-    <header>
-        Guardian
-    </header>
-
-    <p>last updated</p>
-
     <h2>Article server response codes</h2>
     <div id="chart"></div>
     <h2>Article server 5xx codes</h2>
@@ -36,7 +30,7 @@
         curl(['lib/graphite.js'])
             .then(function(graphite) {
                 
-                var g = new graphite.client({ host: 'http://graphite.guprod.gnl/render' });
+                var g = new graphite.client({ host: 'test/resources/1?' });
 
                 // construct a bunch of targets
                 var targets = [
@@ -78,7 +72,7 @@
 
                     element: document.getElementById("chart"),
                     width: window.innerWidth * 0.5,
-                    height: window.innerHeight * 0.5,
+                    height: window.innerHeight * 0.3,
                     renderer: 'line',
                     dataURL: jsonUrl,
                     onData: function(d) {
@@ -109,7 +103,7 @@
                     ]
                 } );
 
-                var errors = new graphite.client({ host: 'http://graphite.guprod.gnl/render' });
+                var errors = new graphite.client({ host: 'test/resources/2?' });
 
                 var targets = [
                     'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
@@ -145,7 +139,7 @@
 
                     element: document.getElementById("chart-5xx"),
                     width: window.innerWidth * 0.5,
-                    height: 60,
+                    height: window.innerHeight * 0.3,
                     renderer: 'line',
                     dataURL: jsonErrorsUrl,
                     onData: function(d) {
@@ -164,14 +158,28 @@
                     ]
                 } );
                 
-                var timeshift = new graphite.client({ host: 'http://graphite.guprod.gnl/render' });
+                var timeshift = new graphite.client({ host: 'test/resources/3?' });
+                
+                var targets = [
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_30x_redirect_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_404_not_found_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_50x_error_request_status_rate-frontend-article.sum',
+                    'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_other_request_status_rate-frontend-article.sum'
+                    ].map(function(tag){
+                        return new graphite.target(tag)
+                                     .exclude('__SummaryInfo__')
+                                     .averageSeries()
+                                     .alias(/gu_([^_]+)/.exec(tag)[1])
+                                     .toQueryString()
+                    })
+
 
                 var tag = 'ganglia.GU-PROD-Frontend.frontend-article_*.*.gu_200_ok_request_status_rate-frontend-article.sum';
                 var targets = [
-                     new graphite.target(tag).alias('0h').toQueryString(),
-                     new graphite.target(tag).timeShift('1h').alias('1h').toQueryString(),
-                     new graphite.target(tag).timeShift('1d').alias('1d').toQueryString(),
-                     new graphite.target(tag).timeShift('7d').alias('7d').toQueryString()
+                     new graphite.target(tag).averageSeries().alias('0h').toQueryString(),
+                     new graphite.target(tag).averageSeries().timeShift('1h').alias('1h').toQueryString(),
+                     new graphite.target(tag).averageSeries().timeShift('1d').alias('1d').toQueryString()
                 ] 
 
                 // push a set of graphite targets 
@@ -199,7 +207,7 @@
 
                     element: document.getElementById("chart-timeshift"),
                     width: window.innerWidth * 0.5,
-                    height: 300,
+                    height: window.innerHeight * 0.3, 
                     renderer: 'line',
                     dataURL: jsonTimeshiftUrl,
                     onData: function(d) {
@@ -212,9 +220,6 @@
                     },
                     series: [
                         {
-                            name: '7d',
-                            color: '#ddd'
-                        }, {
                             name: '1d',
                             color: '#aaa'
                         }, {

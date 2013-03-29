@@ -63,6 +63,12 @@ describe('graphite.target', function() {
         t.toQueryString().should.be.equal('hitcount(graphite.GU-PROD-Frontend,"foo","bar","car","la")')
     })
     
+    it('should serialise functions with numeric arguments', function() {
+        var t = new graphite.target('graphite.GU-PROD-Frontend')
+                     .hitcount('foo', 123,'la')
+        t.toQueryString().should.be.equal('hitcount(graphite.GU-PROD-Frontend,"foo",123,"la")')
+    })
+    
     it('throw error when the target is not given a name', function() {
         (function(){ new graphite.target() }).should.throw(/No target specified/);
     })

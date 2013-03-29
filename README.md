@@ -8,6 +8,12 @@ npm install
 open example.html
 ```
 
+# Example
+
+Here's the library talking to [The Guardian's](http://www.guardian.co.uk) Graphite API, fed in to [Rickshaw](http://code.shutterstock.com/rickshaw/).
+
+![](docs/dashboard.png)
+
 ## Usage
 
 This is written as an AMD module, so you can include it in an HTML page like so,

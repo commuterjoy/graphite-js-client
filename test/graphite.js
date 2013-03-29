@@ -43,23 +43,23 @@ describe('graphite.target', function() {
         (new graphite.target(1)).should.be.ok
     })
     
-    it('should push graphite targets with functions', function() {
+    it('should serialise a function applied to a graphite target', function() {
+        var t = new graphite.target('graphite.GU-PROD-Frontend')
+                     .timeShift('7d')
+        t.toQueryString().should.be.equal('timeShift(graphite.GU-PROD-Frontend,"7d")')
+    });
 
+    it('should serialise multiple functions applied to a graphite target', function() {
         var t = new graphite.target('graphite.GU-PROD-Frontend')
                      .exclude('__SummaryInfo__')
                      .averageSeries()
                      .alias('foo')
-
         t.toQueryString().should.be.equal('alias(averageSeries(exclude(graphite.GU-PROD-Frontend,"__SummaryInfo__")),"foo")')
-        
-        var t = new graphite.target('graphite.GU-PROD-Frontend')
-                     .timeShift('7d')
+    })   
 
-        t.toQueryString().should.be.equal('timeShift(graphite.GU-PROD-Frontend,"7d")')
-
+    it('should serialise functions with multiple arguments applied to a graphite target', function() {
         var t = new graphite.target('graphite.GU-PROD-Frontend')
                      .hitcount('foo', 'bar','car','la')
-
         t.toQueryString().should.be.equal('hitcount(graphite.GU-PROD-Frontend,"foo","bar","car","la")')
     })
     

@@ -7,6 +7,7 @@
     <script src="vendor/curl.js"></script> 
     
     <style>
+        body { padding: 20px; } 
         h2 {
             font-family: Helvetica, sans-serif;
             font-weight: normal;
@@ -14,10 +15,9 @@
             width: 50%;
             font-size: 1em;
         }
-        svg { display: block; margin: 10px auto; border: 1px solid #999; }
+        svg { display: block; margin: 10px auto; }
         svg path { stroke-width: 1; }
         header { background-color: #214583; }
-        h2 { display : none; }
     </style>
     <h2>Article server response codes</h2>
     <div id="chart"></div>
@@ -72,7 +72,7 @@
 
                     element: document.getElementById("chart"),
                     width: window.innerWidth * 0.5,
-                    height: window.innerHeight * 0.3,
+                    height: window.innerHeight * 0.25,
                     renderer: 'line',
                     dataURL: jsonUrl,
                     onData: function(d) {
@@ -139,7 +139,7 @@
 
                     element: document.getElementById("chart-5xx"),
                     width: window.innerWidth * 0.5,
-                    height: window.innerHeight * 0.3,
+                    height: window.innerHeight * 0.25,
                     renderer: 'line',
                     dataURL: jsonErrorsUrl,
                     onData: function(d) {
@@ -207,7 +207,7 @@
 
                     element: document.getElementById("chart-timeshift"),
                     width: window.innerWidth * 0.5,
-                    height: window.innerHeight * 0.3, 
+                    height: window.innerHeight * 0.25, 
                     renderer: 'line',
                     dataURL: jsonTimeshiftUrl,
                     onData: function(d) {
